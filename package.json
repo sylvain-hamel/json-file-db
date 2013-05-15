@@ -1,0 +1,27 @@
+{
+  "name": "json-file-db",
+  "version": "0.0.1",
+  "description": "GET, PUT, POST, DELETE json docs in a simple file",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "dependencies": {
+    "underscore": "~1.4.4"
+  },
+  "devDependencies": {
+    "mocha": "~1.9.0"
+  },
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": "",
+  "keywords": [
+    "db",
+    "file",
+    "json",
+    "rest"
+  ],
+  "author": "redhotsly",
+  "license": "MIT"
+}
