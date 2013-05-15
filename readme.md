@@ -1,27 +1,46 @@
 json-file-db
 =======
 
-Very simple file wrapper to GET, PUT, POST and DELETE javascript objects to files.
+WHAT
+------
+Very simple file wrapper to GET, PUT and DELETE javascript objects to files.
 
 WHY?
 -------
-Good in the first spins of you project when you still dont need a real Db and just wnat to save doc to file.
+Good in the first spins of you project when you still don't need a real Db and just want to save docs to a file.
 
 
 API
 ---
-```javascript
-var db = require('jsong-file-db');
-var allDocs = db.get("file.json");
-db.put("file.json", {id=12, data="someData"});
-db.delete("file.json", {id=12});
-```
 
+The API supports 3 things:
+
+```javascript
+var DB = require('jsong-file-db');
+var db = new DB('file.json');
+
+// 1 - insert a doc
+db.put({id=12, data="someData"}, function(err){
+
+  // 2 - get all docs
+  db.get(function(err, alldocs){
+
+    // 3 - delete a doc
+    db.delete(12, function(err){
+
+    });
+
+  });
+
+});
+
+```
 
 What else?
 ----
 - The module is not optimized at all. Files are read and written completly on each operation.
-
+- It has a dependency on underscore because I'm too lazy to take it out.
+- It's got unit tests
 
 Licence
 -------
