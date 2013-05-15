@@ -1,11 +1,11 @@
 json-file-db
 =======
 
-WHAT
+What?
 ------
 Very simple file wrapper to GET, PUT and DELETE javascript objects to files.
 
-WHY?
+Why?
 -------
 Good in the first spins of you project when you still don't need a real Db and just want to save docs to a file.
 
