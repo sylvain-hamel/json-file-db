@@ -1,6 +1,19 @@
 var fs = require('fs');
 var _ = require('underscore');
 
+
+var convertValueToFilter = function(attrs, idAttr)
+{
+  // if a value was provided instead of an object, use the value as an id
+  if(attrs !== undefined && !_.isObject(attrs))
+  {
+    var val = attrs;
+    attrs = {};
+    attrs[idAttr] = val;
+  }
+  return attrs;
+}
+
 /**
  * Creates a DB instance that is a simple wapper around the given file.
  * @param file File path
@@ -19,10 +32,20 @@ var DB = function (file, idAttribute) {
 DB.prototype = {
 
   /**
-   * Gets all docs in the database
-   * @param cb Callback returning data
+   * Gets docs in the database optionally filtering them
+   * @attrs optional object used to call _.where()
+   * @cb cb Callback returning data
    */
-  get: function (cb) {
+  get: function (attrs, cb) {
+
+    var self = this;
+
+    //predicate is optional
+    if (_.isFunction(attrs))
+    {
+      cb = attrs;
+      attrs = undefined;
+    }
     if (!fs.existsSync(this.file)) {
       cb(null, []);
       return;
@@ -41,11 +64,40 @@ DB.prototype = {
 
       try {
         var docs = JSON.parse(data);
+
+        attrs = convertValueToFilter(attrs, self.idAttr);
+
+        if (attrs)
+        {
+          docs = _.where(docs, attrs);
+        }
         cb(null, docs);
       }
       catch (err) {
         cb(err);
       }
+    });
+
+  },
+
+
+  /**
+   * Gets a single docs that matches 'attrs'. returns undefined if no doc matches.
+   * @attrs optional object used to call _.where(). if not an object, used as the key.
+   * @cb cb Callback returning data
+   */
+  getSingle : function(attrs, cb)
+  {
+    var self = this;
+
+    self.get(attrs, function(err, data){
+
+      if (err){
+        cb(err, null);
+        return;
+      }
+      var selected = (data && data.length > 0) ? data[0] : undefined;
+      cb(null, selected);
     });
 
   },
@@ -85,10 +137,10 @@ DB.prototype = {
 
   /**
    * Deletes a document with the given id value
-   * @param id Id value of the doc to delete
+   * @param attrs Object use to find docs to delete
    * @param cb Callback for result
    */
-  delete: function (id, cb) {
+  delete: function (attrs, cb) {
     if (!fs.existsSync(this.file)) {
       cb(null);
       return;
@@ -102,11 +154,12 @@ DB.prototype = {
         return;
       }
 
-      var keep = _.filter(docs, function (doc) {
-        return doc[self.idAttr] !== id;
-      });
+      attrs = convertValueToFilter(attrs, self.idAttr);
 
-      fs.writeFile(self.file, JSON.stringify(keep, null, " "), 'utf-8', cb)
+      var toDelete = _.where(docs, attrs);
+      var toKeep = _.difference(docs, toDelete);
+
+      fs.writeFile(self.file, JSON.stringify(toKeep, null, " "), 'utf-8', cb)
 
     });
 

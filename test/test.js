@@ -105,9 +105,63 @@ describe('json-file-db', function () {
 
     });
 
-    it('delete() delete matching docs', function (done) {
+    it('get() with attrs object returns matching docs', function (done) {
+
+      db.get({id:10}, function (err, data) {
+        assert.equal(err, undefined);
+        assert.equal(data.length, 1);
+        assert.equal(data[0].id, 10);
+        done();
+      });
+
+    });
+
+
+    it('get() with attrs value returns matching docs', function (done) {
+
+      db.get(10, function (err, data) {
+        assert.equal(err, undefined);
+        assert.equal(data.length, 1);
+        assert.equal(data[0].id, 10);
+        done();
+      });
+
+    });
+
+    it('getSingle() with match, returns first match', function (done) {
+
+      db.getSingle({id:10}, function (err, data) {
+        assert.equal(err, undefined);
+        assert.equal(data.id, 10);
+        done();
+      });
+
+    });
+
+    it('getSingle() no match, returns undefined', function (done) {
+
+      db.getSingle({id:150}, function (err, data) {
+        assert.equal(err, undefined);
+        assert.equal(data, undefined);
+        done();
+      });
+
+    });
+
+    it('delete() with attrs value delete matching docs', function (done) {
 
       db.delete(10, function (err) {
+        assert.equal(err, undefined);
+        assert.equal(true, fs.existsSync(dbfile));
+        assert.equal('[\n {\n  \"id\": 11\n }\n]', fs.readFileSync(dbfile, 'utf-8'));
+        done();
+      });
+
+    });
+
+    it('delete() with attr object delete matching docs', function (done) {
+
+      db.delete({id:10}, function (err) {
         assert.equal(err, undefined);
         assert.equal(true, fs.existsSync(dbfile));
         assert.equal('[\n {\n  \"id\": 11\n }\n]', fs.readFileSync(dbfile, 'utf-8'));
