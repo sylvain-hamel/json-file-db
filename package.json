@@ -1,7 +1,7 @@
 {
   "name": "json-file-db",
   "version": "0.0.1",
-  "description": "GET, PUT, POST, DELETE json docs in a simple file",
+  "description": "Very simple file wrapper to GET, PUT and DELETE javascript objects to files",
   "main": "index.js",
   "directories": {
     "test": "test"
@@ -9,6 +9,7 @@
   "dependencies": {
     "underscore": "~1.4.4"
   },
+  "author":  "redhotsly",
   "devDependencies": {
     "mocha": "~1.9.0",
     "grunt": "~0.4.1",
@@ -18,7 +19,10 @@
   "scripts": {
     "test": "mocha"
   },
-  "repository": "",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/redhotsly/json-file-db.git"
+  },
   "keywords": [
     "db",
     "file",
