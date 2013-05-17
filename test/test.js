@@ -1,14 +1,14 @@
 "use strict";
 var assert = require('assert');
 var fs = require('fs');
-var DB = require('../index.js');
+var openDb = require('../index.js');
 var dbfile = './test/test.json';
 
 describe('json-file-db', function () {
 
   var db;
   beforeEach(function () {
-    db = new DB(dbfile);
+    db = openDb(dbfile);
   })
 
   afterEach(function () {

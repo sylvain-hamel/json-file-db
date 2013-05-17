@@ -1,57 +1,47 @@
 var fs = require('fs');
 var _ = require('underscore');
 
-
-var convertValueToFilter = function(attrs, idAttr)
-{
-  // if a value was provided instead of an object, use the value as an id
-  if(attrs !== undefined && !_.isObject(attrs))
-  {
-    var val = attrs;
-    attrs = {};
-    attrs[idAttr] = val;
-  }
-  return attrs;
-}
-
 /**
  * Creates a DB instance that is a simple wapper around the given file.
  * @param file File path
  * @param idAttribute Name of the attribut to use as the id. Used to identify
  * an existing document by the put and delete methods. Default value is 'id'
- * @constructor
  */
-var DB = function (file, idAttribute) {
-  this.idAttr = idAttribute || 'id';
-  this.file = file;
-  if (!this.file) {
+var open = function (file, idAttribute) {
+  var idAttr = idAttribute || 'id';
+  var file = file;
+  if (!file) {
     throw new Error("DB: file name is required");
   }
-}
 
-DB.prototype = {
+  var convertValueToFilter = function (attrs) {
+    // if a value was provided instead of an object, use the value as an id
+    if (attrs !== undefined && !_.isObject(attrs)) {
+      var val = attrs;
+      attrs = {};
+      attrs[idAttr] = val;
+    }
+    return attrs;
+  }
 
   /**
    * Gets docs in the database optionally filtering them
    * @attrs optional object used to call _.where()
    * @cb cb Callback returning data
    */
-  get: function (attrs, cb) {
-
-    var self = this;
+  var get = function (attrs, cb) {
 
     //predicate is optional
-    if (_.isFunction(attrs))
-    {
+    if (_.isFunction(attrs)) {
       cb = attrs;
       attrs = undefined;
     }
-    if (!fs.existsSync(this.file)) {
+    if (!fs.existsSync(file)) {
       cb(null, []);
       return;
     }
 
-    fs.readFile(this.file, 'utf-8', function (err, data) {
+    fs.readFile(file, 'utf-8', function (err, data) {
       if (err) {
         cb(err);
         return;
@@ -65,10 +55,9 @@ DB.prototype = {
       try {
         var docs = JSON.parse(data);
 
-        attrs = convertValueToFilter(attrs, self.idAttr);
+        attrs = convertValueToFilter(attrs);
 
-        if (attrs)
-        {
+        if (attrs) {
           docs = _.where(docs, attrs);
         }
         cb(null, docs);
@@ -78,21 +67,18 @@ DB.prototype = {
       }
     });
 
-  },
-
+  };
 
   /**
    * Gets a single docs that matches 'attrs'. returns undefined if no doc matches.
    * @attrs optional object used to call _.where(). if not an object, used as the key.
    * @cb cb Callback returning data
    */
-  getSingle : function(attrs, cb)
-  {
-    var self = this;
+  var getSingle = function (attrs, cb) {
 
-    self.get(attrs, function(err, data){
+    get(attrs, function (err, data) {
 
-      if (err){
+      if (err) {
         cb(err, null);
         return;
       }
@@ -100,7 +86,7 @@ DB.prototype = {
       cb(null, selected);
     });
 
-  },
+  };
 
   /**
    * Inserts or updates a doc in the database. If no doc is found
@@ -109,11 +95,9 @@ DB.prototype = {
    * @param newDoc The doc
    * @param cb Callback for result
    */
-  put: function (newDoc, cb) {
+  var put = function (newDoc, cb) {
 
-    var self = this;
-
-    this.get(function (err, docs) {
+    get(function (err, docs) {
 
       if (err) {
         cb(err);
@@ -121,7 +105,7 @@ DB.prototype = {
       }
 
       var match = _.filter(docs, function (doc) {
-        return doc[self.idAttr] === newDoc[self.idAttr];
+        return doc[idAttr] === newDoc[idAttr];
       });
       if (match.length >= 1) {
         _.extend(match[0], newDoc);
@@ -130,41 +114,47 @@ DB.prototype = {
         docs.push(newDoc);
       }
 
-      fs.writeFile(self.file, JSON.stringify(docs, null, " "), 'utf-8', cb)
+      fs.writeFile(file, JSON.stringify(docs, null, " "), 'utf-8', cb)
 
     });
-  },
+  };
 
   /**
    * Deletes a document with the given id value
    * @param attrs Object use to find docs to delete
    * @param cb Callback for result
    */
-  delete: function (attrs, cb) {
-    if (!fs.existsSync(this.file)) {
+  var del = function (attrs, cb) {
+    if (!fs.existsSync(file)) {
       cb(null);
       return;
     }
-    var self = this;
 
-    this.get(function (err, docs) {
+    get(function (err, docs) {
 
       if (err) {
         cb(err);
         return;
       }
 
-      attrs = convertValueToFilter(attrs, self.idAttr);
+      attrs = convertValueToFilter(attrs);
 
       var toDelete = _.where(docs, attrs);
       var toKeep = _.difference(docs, toDelete);
 
-      fs.writeFile(self.file, JSON.stringify(toKeep, null, " "), 'utf-8', cb)
+      fs.writeFile(file, JSON.stringify(toKeep, null, " "), 'utf-8', cb)
 
-    });
+    })
 
+  };
+
+  return {
+    get: get,
+    getSingle: getSingle,
+    put: put,
+    "delete": del
   }
 
 }
 
-module.exports = DB;
+module.exports = open;

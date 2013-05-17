@@ -21,8 +21,8 @@ API
 ### Save a document
 
 ```javascript
-var DB = require('json-file-db');
-var db = new DB('file.json');
+var openDB = require('json-file-db');
+var db = openDB('file.json');
 
 db.put({id=12, data="someData"}, function(err){
 
@@ -32,8 +32,8 @@ db.put({id=12, data="someData"}, function(err){
 ### Get all documents
 
 ```javascript
-var DB = require('json-file-db');
-var db = new DB('file.json');
+var openDB = require('json-file-db');
+var db = openDB('file.json');
 
 db.get(function(err, data){
   console.log(data.length);
@@ -43,8 +43,8 @@ db.get(function(err, data){
 ### Get documents matching a query (using _.where())
 
 ```javascript
-var DB = require('json-file-db');
-var db = new DB('file.json');
+var openDB = require('json-file-db');
+var db = openDB('file.json');
 
 db.get({name:"mike", age:10}, function(err, data){
   console.log(data.length);
@@ -54,8 +54,8 @@ db.get({name:"mike", age:10}, function(err, data){
 ### Get documents matching an Id value
 
 ```javascript
-var DB = require('json-file-db');
-var db = new DB('file.json');
+var openDB = require('json-file-db');
+var db = openDB('file.json');
 
 db.get(10, function(err, data){
   console.log(data.length);
@@ -66,8 +66,8 @@ db.get(10, function(err, data){
 This is a thin wrapper around get() to avoid checking for data.length before accessing data[0].
 
 ```javascript
-var DB = require('json-file-db');
-var db = new DB('file.json');
+var openDB = require('json-file-db');
+var db = openDB('file.json');
 
 db.getSingle(10, function(err, data){
   console.log(data.name);
@@ -77,8 +77,8 @@ db.getSingle(10, function(err, data){
 ### Delete a document
 
 ```javascript
-var DB = require('json-file-db');
-var db = new DB('file.json');
+var openDB = require('json-file-db');
+var db = openDB('file.json');
 
 db.delete(10, function(err, data){
   console.log(data.Name);
