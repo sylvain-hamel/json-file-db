@@ -54,17 +54,18 @@ var open = function (file, idAttribute) {
 
       try {
         var docs = JSON.parse(data);
-
-        attrs = convertValueToFilter(attrs);
-
-        if (attrs) {
-          docs = _.where(docs, attrs);
-        }
-        cb(null, docs);
       }
       catch (err) {
         cb(err);
+        return;
       }
+
+      attrs = convertValueToFilter(attrs);
+
+      if (attrs) {
+        docs = _.where(docs, attrs);
+      }
+      cb(null, docs);
     });
 
   };
