@@ -1,6 +1,6 @@
 {
   "name": "json-file-db",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Very simple file wrapper to GET, PUT and DELETE javascript objects to files",
   "main": "index.js",
   "directories": {
@@ -9,7 +9,7 @@
   "dependencies": {
     "underscore": "~1.4.4"
   },
-  "author":  "redhotsly",
+  "author": "redhotsly",
   "devDependencies": {
     "mocha": "~1.9.0",
     "grunt": "~0.4.1",
@@ -29,6 +29,5 @@
     "json",
     "rest"
   ],
-  "author": "redhotsly",
   "license": "MIT"
 }
